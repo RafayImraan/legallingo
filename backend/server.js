@@ -23,6 +23,7 @@ app.disable('x-powered-by');
 app.use(cors({ origin: allowedOrigins, methods: ['GET', 'POST'] }));
 app.use(express.json({ limit: '1mb' }));
 app.use('/api', rateLimit);
+app.get('/', (_req, res) => res.json({ service: 'LegalLingo API', status: 'online', health: '/api/health', transcript: '/api/transcript' }));
 app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'LegalLingo API', assemblyaiConfigured: Boolean(process.env.ASSEMBLYAI_API_KEY) }));
 app.use('/api/transcript', transcriptRouter);
 app.use((err, _req, res, _next) => {
