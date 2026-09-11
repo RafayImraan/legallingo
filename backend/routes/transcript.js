@@ -45,6 +45,13 @@ router.post('/', upload.single('audio'), async (req, res, next) => {
   }
 });
 
+router.use((error, _req, res, next) => {
+  if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
+    return res.status(413).json({ error: 'This upload is too large. The maximum supported audio size is 50 MB.' });
+  }
+  next(error);
+});
+
 function buildCaseBrief(text) {
   const sentences = text.match(/[^.!?]+[.!?]?/g)?.map((item) => item.trim()).filter(Boolean) || [];
   const actionItems = sentences.filter((sentence) => /\b(bring|attend|file|submit|provide|review|keep|contact|send)\b/i.test(sentence)).slice(0, 3);

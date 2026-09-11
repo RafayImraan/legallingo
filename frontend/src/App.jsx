@@ -1,6 +1,6 @@
 import { RotateCcw } from 'lucide-react';
 import { useState } from 'react';
-import { requestTranscript } from './api/client.js';
+import { requestTranscript, uploadAudio } from './api/client.js';
 import Landing from './components/Landing.jsx';
 import UploadPanel from './components/UploadPanel.jsx';
 import TranscriptView from './components/TranscriptView.jsx';
@@ -8,15 +8,28 @@ import SummaryCard from './components/SummaryCard.jsx';
 import PrivacyBadge from './components/PrivacyBadge.jsx';
 import CaseBrief from './components/CaseBrief.jsx';
 import AccuracyIndicator from './components/AccuracyIndicator.jsx';
+import { demoResult } from './data/demoResult.js';
 
 export default function App() {
   const [status, setStatus] = useState('idle');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [speakerNames, setSpeakerNames] = useState({});
+  const showResult = (data) => {
+    setSpeakerNames(Object.fromEntries([...new Set(data.transcript.map((line) => line.speaker))].map((speaker) => [speaker, `Speaker ${speaker}`])));
+    setResult(data);
+    setStatus('results');
+    setTimeout(() => document.querySelector('#results')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  };
   const handleSubmit = async (payload) => {
     setError(''); setStatus('uploading');
-    try { setStatus('processing'); const data = await requestTranscript(payload); setSpeakerNames(Object.fromEntries([...new Set(data.transcript.map((line) => line.speaker))].map((speaker) => [speaker, `Speaker ${speaker}`]))); setResult(data); setStatus('results'); setTimeout(() => document.querySelector('#results')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); }
+    if (payload.demo) { showResult(demoResult); return; }
+    try {
+      const audioUrl = payload.file ? await uploadAudio(payload.file) : payload.audioUrl;
+      setStatus('processing');
+      const data = await requestTranscript({ ...payload, file: undefined, audioUrl });
+      showResult(data);
+    }
     catch (requestError) { setError(requestError.message); setStatus('idle'); }
   };
   const reset = () => { setResult(null); setSpeakerNames({}); setError(''); setStatus('idle'); window.scrollTo({ top: 0, behavior: 'smooth' }); };

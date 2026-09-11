@@ -14,13 +14,20 @@ export default function UploadPanel({ status, onSubmit, error }) {
   const busy = status === 'uploading' || status === 'processing';
   const chooseFile = (event) => {
     const selected = event.target.files?.[0];
-    if (selected) setFile(selected);
+    if (!selected) return;
+    if (selected.size > 50 * 1024 * 1024) {
+      setFile(null);
+      window.alert('The maximum audio size is 50 MB. Please trim or compress the recording, then try again.');
+      event.target.value = '';
+      return;
+    }
+    setFile(selected);
   };
   const submitFile = () => file && onSubmit({ file, consent });
   return (
     <section id="upload" className="upload-section" aria-labelledby="upload-title">
       <div className="upload-intro"><div className="section-heading"><p className="eyebrow">New analysis</p><h2 id="upload-title">Start with the conversation.</h2><p>Upload a recording or run a guided demo to see the full analysis.</p></div><div className="upload-guidance"><span>Accepted formats</span><strong>MP3, WAV, M4A</strong><span>Maximum file size</span><strong>50 MB</strong></div></div>
-      <div className={`drop-zone ${file ? 'has-file' : ''}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const dropped = event.dataTransfer.files?.[0]; if (dropped) setFile(dropped); }}>
+      <div className={`drop-zone ${file ? 'has-file' : ''}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const dropped = event.dataTransfer.files?.[0]; if (dropped) chooseFile({ target: { files: [dropped], value: '' } }); }}>
         <div className="upload-icon"><FileAudio size={25} /></div>
         <div className="drop-zone-copy"><h3>{file ? file.name : 'Drop your audio file here'}</h3><p>{file ? 'Ready for analysis' : 'or choose a file from your device'}</p></div>
         <input ref={inputRef} type="file" accept=".mp3,.wav,.m4a,audio/mpeg,audio/wav,audio/x-m4a" onChange={chooseFile} hidden />

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import transcriptRouter from './routes/transcript.js';
+import blobRouter from './routes/blob.js';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,6 +26,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use('/api', rateLimit);
 app.get('/', (_req, res) => res.json({ service: 'LegalLingo API', status: 'online', health: '/api/health', transcript: '/api/transcript' }));
 app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'LegalLingo API', assemblyaiConfigured: Boolean(process.env.ASSEMBLYAI_API_KEY) }));
+app.use('/api/blob', blobRouter);
 app.use('/api/transcript', transcriptRouter);
 app.use((err, _req, res, _next) => {
   console.error(err);

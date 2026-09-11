@@ -29,6 +29,12 @@ Legal conversations often contain specialist terminology that prevents people fr
 
 Without an API key, the API intentionally returns a polished demo transcript so the full UI can be reviewed. Add a key for real AssemblyAI transcription and PII redaction.
 
+### Vercel Blob uploads
+
+The deployed app uploads audio directly from the browser to a Vercel Blob store, then sends AssemblyAI the resulting URL. This bypasses Vercel Functions' 4.5 MB request limit and supports files up to 50 MB. In the **backend Vercel project**, open **Storage**, create a **Blob** store, and connect it to Production. Vercel adds `BLOB_READ_WRITE_TOKEN` automatically.
+
+The hackathon flow uses a public, random Blob URL so AssemblyAI can retrieve the recording. Delete Blob objects after demonstration; production legal recordings require authenticated private storage, a signed retrieval workflow, and retention controls.
+
 ## Sample audio
 
 Real audio cannot be generated as part of this project. Add your own permitted `.mp3`, `.wav`, or `.m4a` recordings under `backend/sample-audio/`. The preset scenario URLs in `frontend/src/components/UploadPanel.jsx` are placeholders; point them to publicly reachable audio files before a live demo.
