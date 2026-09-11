@@ -30,4 +30,9 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ error: err.message || 'Unexpected server error.' });
 });
 
-app.listen(port, () => console.log(`LegalLingo API listening on http://localhost:${port}`));
+// Vercel imports the Express app; local and Render environments start the listener.
+if (!process.env.VERCEL) {
+  app.listen(port, () => console.log(`LegalLingo API listening on http://localhost:${port}`));
+}
+
+export default app;
