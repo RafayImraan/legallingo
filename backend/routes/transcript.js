@@ -10,8 +10,9 @@ const supportedTypes = new Set(['audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio
 router.post('/', upload.single('audio'), async (req, res, next) => {
   try {
     const audioUrl = req.body?.audio_url;
+    const demo = req.body?.demo === true || req.body?.demo === 'true';
     const consent = req.body?.consent === true || req.body?.consent === 'true';
-    if (!req.file && !audioUrl) {
+    if (!demo && !req.file && !audioUrl) {
       return res.status(400).json({ error: 'Upload an audio file or provide audio_url.' });
     }
     if (!consent) {
@@ -24,7 +25,7 @@ router.post('/', upload.single('audio'), async (req, res, next) => {
       return res.status(400).json({ error: 'audio_url must be a valid HTTPS URL.' });
     }
 
-    const completed = await createTranscript({ file: req.file, audioUrl });
+    const completed = await createTranscript({ file: req.file, audioUrl, demo });
     const transcriptText = completed.transcript.map((line) => line.text).join(' ');
     const jargonMatches = findJargon(transcriptText);
     const summary = await summarizeTranscript(completed.transcriptId, completed.safeText, completed.isDemo);

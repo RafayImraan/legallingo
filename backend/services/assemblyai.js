@@ -11,8 +11,8 @@ const demoTranscript = [
 
 const headers = () => ({ authorization: process.env.ASSEMBLYAI_API_KEY });
 
-export async function createTranscript({ file, audioUrl }) {
-  if (!process.env.ASSEMBLYAI_API_KEY) return { transcript: demoTranscript, safeText: demoTranscript.map((line) => line.text).join(' '), transcriptId: null, isDemo: true, detectedLanguage: 'en' };
+export async function createTranscript({ file, audioUrl, demo = false }) {
+  if (demo || !process.env.ASSEMBLYAI_API_KEY) return { transcript: demoTranscript, safeText: demoTranscript.map((line) => line.text).join(' '), transcriptId: null, isDemo: true, detectedLanguage: 'en' };
 
   let sourceUrl = audioUrl;
   if (file) {

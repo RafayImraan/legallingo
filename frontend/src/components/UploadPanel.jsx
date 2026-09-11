@@ -2,9 +2,9 @@ import { FileAudio, HeartHandshake, House, LoaderCircle, Shield, Upload, Waves }
 import { useRef, useState } from 'react';
 
 const samples = [
-  { label: 'Property dispute', detail: '~90 sec demo', icon: House, url: 'https://example.com/legallingo-property-dispute.mp3' },
-  { label: 'Family case', detail: '~75 sec demo', icon: HeartHandshake, url: 'https://example.com/legallingo-family-case.mp3' },
-  { label: 'Criminal bail', detail: '~60 sec demo', icon: Shield, url: 'https://example.com/legallingo-criminal-bail.mp3' }
+  { label: 'Property dispute', detail: 'Instant demo', icon: House },
+  { label: 'Family case', detail: 'Instant demo', icon: HeartHandshake },
+  { label: 'Criminal bail', detail: 'Instant demo', icon: Shield }
 ];
 
 export default function UploadPanel({ status, onSubmit, error }) {
@@ -30,7 +30,7 @@ export default function UploadPanel({ status, onSubmit, error }) {
         </div>
       </div>
       <label className="consent-check"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} /><span>I have permission from everyone recorded to process this audio. I understand LegalLingo is not legal advice.</span></label>
-      <div className="sample-row"><span><Waves size={16} /> Or try a scenario</span>{samples.map((sample) => { const Icon = sample.icon; return <button key={sample.label} className="sample-button" onClick={() => onSubmit({ audioUrl: sample.url, consent: true })} disabled={busy}><Icon size={16} /><span><strong>{sample.label}</strong><small>{sample.detail}</small></span></button>; })}</div>
+      <div className="sample-row"><span><Waves size={16} /> Or try a scenario</span>{samples.map((sample) => { const Icon = sample.icon; return <button key={sample.label} className="sample-button" onClick={() => onSubmit({ consent: true, demo: true })} disabled={busy}><Icon size={16} /><span><strong>{sample.label}</strong><small>{sample.detail}</small></span></button>; })}</div>
       {busy && <div className="progress-state" role="status"><LoaderCircle className="spin" size={20} /><span>{status === 'uploading' ? 'Uploading securely...' : 'Transcribing, redacting, and summarizing...'}</span><div className="progress-track"><i /></div></div>}
       {error && <p className="error-message">{error}</p>}
     </section>
