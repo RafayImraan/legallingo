@@ -10,7 +10,12 @@ export async function uploadAudio(file) {
     });
     return blob.url;
   } catch (error) {
-    throw new Error(error.message || 'Audio upload failed. Confirm the Vercel Blob store is connected to the API project.');
+    const message = error?.message;
+    throw new Error(
+      message && message !== 'Failed to fetch'
+        ? message
+        : 'Could not start the secure audio upload. Confirm the API deployment has the Blob store connected, then redeploy it.'
+    );
   }
 }
 
@@ -29,7 +34,7 @@ export async function requestTranscript({ file, audioUrl, consent, demo = false 
   try {
     response = await fetch(`${API_BASE}/api/transcript`, { method: 'POST', ...options });
   } catch {
-    throw new Error('Could not reach the analysis service. For uploads, keep the file below 4 MB on this Vercel deployment.');
+    throw new Error('Could not reach the analysis service. Please try the upload again.');
   }
   let data;
   try { data = await response.json(); } catch { throw new Error('The analysis service returned an invalid response. Please try again.'); }
